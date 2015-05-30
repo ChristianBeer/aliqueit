@@ -1,0 +1,116 @@
+
+//aliqueit, computes aliquot sequences
+//Mikael Klasson 2009-2011
+//mklasson at googles big mail thing
+//http://mklasson.com
+
+v1.12 26 Sep 2011
+  * merged v1.10a and v1.11.
+
+v1.11 28 Jun 2011 (bsquared and bchaffin)
+  + "-y" command line option does all factoring with YAFU after trial division and rho
+  + "-r <add_digits>" when used with -d or -c or both will ignore the max digit/composite
+    limits if the sequence is decreasing or has the downdriver or a few other promising 
+    patterns, and will increase the max digit/composite limit by <add_digits> if the
+    sequence does not have a driver
+
+v1.10a 01 May 2011
+  + ecmpy option in .ini file to allow running ecm via an external python script
+
+v1.10 25 Aug 2010
+  + "-d <max_digits>" quits after sequence reaches <max_digits> digits.
+  + "-c <max_cofactor>" quits after sequence passes ecm with a cofactor of 
+    <max_cofactor> or more digits.
+  + "-b" with -c and -d quits after a number meets both limits.
+  + "-m <max_ecm_level>" ecm will only run to level <max_ecm_level> where 
+    '1'=20-digit factor, '2'=25, etc.
+  All updates in this version were done by Greebley.
+
+v1.09 22 May 2010
+  + "-t" quits aliqueit after verifying the elf file. Returns 1 if any error 
+    (not warning) is detected, otherwise 0.
+  + logs error and warning msgs during elf verification.
+  + logs any encountered wrong factors.
+  + logs cycle, merge and termination msgs.
+  + logs the ecm curve # that found the factor. Thanks kar_bon.
+
+v1.08 06 Jun 2009
+  + "-q" quits aliqueit after factoring the first number.
+  + detects bad factors (e.g. from recent yafu problem).
+  + "-s <start>" submits the given sequence's elf file to Syd's DB, starting 
+    with iteration <start>. You'll need wget to use this.
+  + timestamps in log file. Thanks kar_bon.
+  + handles up to sextic polynomials output by msieve.
+  * only prime factors are considered "neat". Thanks 10metreh.
+
+v1.07 13 Apr 2009
+  + can resume from elf files with a partial last line.
+  + added a simple Makefile for linux (g++).
+  + <b1scale_*> and <b2scale_*> settings can be used to tune p-1/p+1/ecm work.
+    B1 is multiplied by b1scale_*, and b2scale_* is passed to gmp-ecm using the 
+    -B2scale arg. Note that b2scale=2 doesn't result in a B2 value twice as big 
+    as with b2scale=1.
+  * flushes stdout output for status messages. No difference on windows, but 
+    linux seems to need it.
+  * redirects msieve's stderr output when hiding.
+
+v1.06 31 Mar 2009
+  + uses msieve for gnfs poly-finding if <use_msieve_polyfind> is true.
+
+v1.05 29 Mar 2009
+  + prints the size of the starting composite for each line.
+  + runs pollard rho (internal) right after the trial factoring. Nice speedup 
+    for small numbers.
+  + runs auto-increasing ecm forever instead of exiting if something goes wrong 
+    and ggnfs fails to find a factor.
+  + detects some malformed elf files instead of crashing while verifying... 
+    Thanks Phil MjX.
+  + "-h" prints a little help text on cmdline args.
+  + logs cofactors explicitly.
+  + the expressions used to determine maximum ecm level can now be customised 
+    with <qs_k>, <qs_m>, <gnfs_k>, and <gnfs_m>.
+  + "-p" runs aliqueit and all spawned processes at idle priority.
+
+v1.04 22 Mar 2009
+  + also does P-1/P+1 in addition to ecm using the gmp-ecm recommended 10*B1 
+    for P-1 and 3x 5*B1 for P+1.
+  + only saves relevant parts of the ecm log, or nothing at all if no factor 
+    was found.
+  + logs "*** c<digits> = <factor>" for found composite factors.
+  + scans through the last 100KB of the log file when starting up and uses all 
+    relevant factors it finds. Makes restarting easier as you no longer need to 
+    manually specify factors with "-f" if you found them with the latest 
+    aliqueit run.
+
+v1.03 21 Mar 2009
+  + cmdline arg "-e" skips ecm on the current iteration and goes straight to 
+    qs/gnfs. Further iterations use ecm normally.
+  + prints and logs a cheerful msg if an ecm factor >= <neat_factor_limit_ecm> 
+    digits is found.
+  + prints the size of the composite we're currently processing.
+  * scientifies printed B1 values. 1000000 -> 1e6.
+  * fixed a potential bug where we'd ecm forever ("ecm -c 0") or until we found 
+    a factor. It never actually happened, but it could have if the ecm level 
+    formulas had looked different.
+  * changed the default <big_ecm_cutoff> to 65 instead of 70. This results in a 
+    little more ecm being done for c65-c69.
+
+v1.02 20 Mar 2009
+  + much faster for small numbers, and probably faster for bigger numbers, i.e. 
+    better ecm tuning.
+  + compiles and runs under linux now. Thanks Ben.
+  + detects when a sequence merges with an earlier sequence. 
+    Setting "detect_merge = false" can be used to skip this, should you want 
+    to try and hit the possibly imminent termination anyway.
+  + hides yafu/msieve screen output for composites < <hide_output_limit> digits.
+    Unwanted output is redirected to <null_device>.
+
+v1.01 14 Mar 2009
+  + logs sequence value to log file when starting to factor.
+  + logs all found factors to log file.
+  + detects cycles.
+  * precalcs primes for trial factoring.
+  * bugfix in cmdline argument parser.
+
+v1.00 13 Mar 2009
+  + initial release.
