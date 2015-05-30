@@ -655,12 +655,16 @@ bool factor( mpz_class n, vector<pair<mpz_class,int> > & factors, vector<mpz_cla
 						<< "I'll cheerfully loop and try again though..." << endl;
 				}
 			} else {	//bring out the big gnfs guns then
-				if( !run_gnfs( input, new_factors ) ) {
-					cout << "WARNING: gnfs failed to find a factor. This really shouldn't happen." << endl
-						<< "I'll just run ecm till the end of time or a factor turns up..." << endl
-						<< "Let's hope you don't run out of disk space before either of those." << endl;
-					run_ecm_autoinc( input, new_factors, true );
-				}
+				if (cfg.stop_failed_gnfs) {
+                        cout << "WARNING: gnfs failed to find a factor. This really shouldn't happen." << endl
+                            << "I'll just run ecm till the end of time or a factor turns up..." << endl
+                            << "Let's hope you don't run out of disk space before either of those." << endl;
+                        run_ecm_autoinc( input, new_factors, true );
+                    } else {
+                        cout << "WARNING: gnfs failed to find a factor. This really shouldn't happen." << endl;
+                        log_msg( "*** gnfs failed to find a factor. Ending.\n" );
+                        return false;
+                    }
 			}
 			add_factors( n, factors, new_factors );
 		}
