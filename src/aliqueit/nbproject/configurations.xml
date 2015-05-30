@@ -38,7 +38,7 @@
           <executablePath>aliqueit</executablePath>
           <ccTool>
             <incDir>
-              <pElem>../gmp</pElem>
+              <pElem>../../../../gmp</pElem>
             </incDir>
           </ccTool>
         </makeTool>
@@ -53,12 +53,6 @@
       </item>
       <item path="misc.cc" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
-          <incDir>
-            <pElem>../../../../gmp</pElem>
-          </incDir>
-          <incFile>
-            <pElem>/usr/local/lib</pElem>
-          </incFile>
         </ccTool>
       </item>
     </conf>
