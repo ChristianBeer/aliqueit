@@ -180,7 +180,7 @@ void cfg_t::read_config_file() {
 		}
 		string arg = tolower( trim( line.substr( 0, o ) ) );	//arg name
 		string val = trim( line.substr( o + 1 ) );		//value
-		cout << arg << " = " << val << endl;
+		//cout << arg << " = " << val << endl;
 		
 		//assign values...
 		if( arg == "trial_cutoff" ) {

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <in>aliqueit.cc</in>
+      <in>cfg.cc</in>
+      <in>misc.cc</in>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-O3"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>aliqueit</executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>../gmp</pElem>
+            </incDir>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="aliqueit.cc" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="cfg.cc" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <folder path="0">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../gmp</pElem>
+          </incDir>
+          <incFile>
+            <pElem>/usr/local/lib</pElem>
+          </incFile>
+        </ccTool>
+      </folder>
+      <item path="misc.cc" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
