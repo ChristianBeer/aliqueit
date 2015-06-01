@@ -910,7 +910,7 @@ bool submit_elf( mpz_class & seq, int from_iteration ) {
 	fo << post_data;
 	fo.close();
 	cout << "Sending " << sent_lines << " lines..." << endl;
-	system( ( "wget --cache=off --output-document=" + tmp_file + " --post-file=" + post_file + " http://factorization.ath.cx/search.php?report=true" ).c_str() );
+	system( ( "wget --cache=off --output-document=" + tmp_file + " --post-file=" + post_file + " http://factordb.com/report.php" ).c_str() );
 	delete_file( post_file );
 
 	f.clear();
@@ -1148,6 +1148,8 @@ int main( int argc, char ** argv ) {
         // factor the current index and save the return value
         bool res_factor = factor( n, factors, external_factors, true, curr_max_cofactor, max_ecm_level );
 
+        merge_factors(factors);
+
         // save the current index to file even if it is incomplete
         string msg1 = tostring( index ) + " .\t ";
 		string msg2 =  n.get_str() + " = ";
@@ -1155,7 +1157,7 @@ int main( int argc, char ** argv ) {
 			if( j ) msg2 += " * ";
 			msg2 += factors[j].first.get_str() + ( factors[j].second > 1 ? ( "^" + tostring( factors[j].second ) ) : "" );
 		}
-                string msg3 = " : " + driver;
+        string msg3 = " : " + driver;
 		save_result( seq, msg1 + msg2 + "\n" );
 		cout << msg1 << ( factors.size() == 1 && factors[0].second == 1 ? "prp" : "c" ) << n.get_str().size() << " = " << msg2 << msg3 << endl;
 
