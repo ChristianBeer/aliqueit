@@ -1,3 +1,9 @@
+# the binary itself
+src/aliqueit/aliqueit
+
+# Netbeans project files
+src/aliqueit/nbproject/private/
+
 # Compiled Object files
 *.slo
 *.lo

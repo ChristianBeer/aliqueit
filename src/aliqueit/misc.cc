@@ -68,7 +68,7 @@ string maketwodigit( int n ) {
 //[Dec 12, 12:34:09] running check...
 //returns "[Mon DD YYYY, HH:MM:SS]" string of date <timesecs> (returned from time()) or current time if timesecs == 0
 string get_timestamp( time_t timesecs ) {
-	char *months[] = {"","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+	const char *months[] = {"","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 	struct tm * t;
 	time_t	tt = timesecs;
 	if( !tt ) tt = time( 0 );
@@ -143,9 +143,9 @@ void append_file( string src_fname, string dest_fname ) {
 //sets process priority from 0 to 4 with 0 being idle and 4 being high.
 void set_priority( int priority ) {
 #if defined(WIN32)
-	unsigned int aprio[] = { IDLE_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, 
+	unsigned int aprio[] = { IDLE_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS,
 		ABOVE_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS };
-	//unsigned int atprio[] = { THREAD_PRIORITY_IDLE, THREAD_PRIORITY_LOWEST, THREAD_PRIORITY_BELOW_NORMAL, 
+	//unsigned int atprio[] = { THREAD_PRIORITY_IDLE, THREAD_PRIORITY_LOWEST, THREAD_PRIORITY_BELOW_NORMAL,
 	//	THREAD_PRIORITY_NORMAL, THREAD_PRIORITY_ABOVE_NORMAL, THREAD_PRIORITY_HIGHEST };
 	SetPriorityClass( GetCurrentProcess(), aprio[priority] );
 	//SetThreadPriority( GetCurrentThread(), atprio[0] );

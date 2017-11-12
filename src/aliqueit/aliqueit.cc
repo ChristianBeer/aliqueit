@@ -41,7 +41,7 @@ bool use_yafu_factor = false;	//cmdline arg "-y" uses yafu for everything after 
 bool factor( mpz_class n, vector<pair<mpz_class,int> > & factors, vector<mpz_class> & new_factors, bool clear_factors = true, int max_cofactor = 0, int max_ecm_level = 0 );
 
 
-//checks if <value> restarts a cycle. 
+//checks if <value> restarts a cycle.
 //if it does, the cycle is printed and the program exits. otherwise the value is added for future cycle detection.
 void add_and_check_cycle( unsigned int index, mpz_class & value ) {
 	if( seq_values.count( value ) ) {
@@ -52,9 +52,9 @@ void add_and_check_cycle( unsigned int index, mpz_class & value ) {
 }
 
 //checks if <value> < <seq>, i.e. the sequence merges with an earlier sequence number.
-void check_merge( mpz_class & seq, mpz_class & value ) {
+void check_merge( mpz_class & seq, mpz_class & value, int index ) {
 	if( cfg.detect_merge && value < seq ) {
-		log_and_print( "Sequence merges with earlier sequence " + value.get_str() + ".\n" );
+		log_and_print( "Sequence merges with earlier sequence " + value.get_str() + " at index " + tostring( index ) + ".\n" );
 		exit( 0 );
 	}
 }
@@ -218,7 +218,7 @@ int run_ecm_big( string input_number, vector<mpz_class> & new_factors, int max_e
 		log_msg( "\n", false );
 		log_msg( msg + "\n" );
 		cout << msg << "              \r" << flush;
-		system( ( "echo " + input_number + " | " + cfg.ecm_cmd + " -pm1 -B2scale " 
+		system( ( "echo " + input_number + " | " + cfg.ecm_cmd + " -pm1 -B2scale "
 			+ tostring( cfg.b2scale_pm1 ) + " " + tostring( pb1 ) + " > " + cfg.ecm_tempfile ).c_str() );
 		int num_facs = find_log_factors_gmp_ecm( cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors );
 		if( num_facs ) {
@@ -232,7 +232,7 @@ int run_ecm_big( string input_number, vector<mpz_class> & new_factors, int max_e
 		log_msg( "\n", false );
 		log_msg( msg + "\n" );
 		cout << msg << "              \r" << flush;
-		system( ( "echo " + input_number + " | " + cfg.ecm_cmd + " -one -pp1 -c 3 -B2scale " 
+		system( ( "echo " + input_number + " | " + cfg.ecm_cmd + " -one -pp1 -c 3 -B2scale "
 			+ tostring( cfg.b2scale_pp1 ) + " " + tostring( pb1 ) + " > " + cfg.ecm_tempfile ).c_str() );
 		num_facs = find_log_factors_gmp_ecm( cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors );
 		if( num_facs ) {
@@ -247,10 +247,10 @@ int run_ecm_big( string input_number, vector<mpz_class> & new_factors, int max_e
 		log_msg( msg + "\n" );
 		cout << msg << "              \r" << flush;
         if( cfg.use_ecmpy ) {   //use ecm.py for multithreading
-		    system( ( "echo " + input_number + " | " + cfg.ecmpy_cmd + " -one -c " + tostring( curves ) 
+		    system( ( "echo " + input_number + " | " + cfg.ecmpy_cmd + " -one -c " + tostring( curves )
 			    + " -B2scale " + tostring( cfg.b2scale_ecm )+ " -out " + cfg.ecm_tempfile + " " + tostring( b1 ) ).c_str() );
         } else {    //use regular ecm
-		    system( ( "echo " + input_number + " | " + cfg.ecm_cmd + " -one -c " + tostring( curves ) 
+		    system( ( "echo " + input_number + " | " + cfg.ecm_cmd + " -one -c " + tostring( curves )
 			    + " -B2scale " + tostring( cfg.b2scale_ecm ) + " " + tostring( b1 ) + " > " + cfg.ecm_tempfile ).c_str() );
         }
 		num_facs = find_log_factors_gmp_ecm( cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors );
@@ -266,7 +266,7 @@ int run_ecm_big( string input_number, vector<mpz_class> & new_factors, int max_e
 
 //run auto-increasing ecm using #curves decided by <ecm_depth> or infinitely many if <loop_forever> is true
 int run_ecm_autoinc( string input_number, vector<mpz_class> & new_factors, bool loop_forever = false ) {
-	delete_file( cfg.ecm_tempfile.c_str() );
+	delete_file( cfg.ecm_tempfile );
 
 	//find #curves to run
 	size_t input_digits = input_number.size();
@@ -382,7 +382,7 @@ int run_rho( mpz_class & input_number, vector<mpz_class> & new_factors ) {
 //returns #factors found
 int run_yafu( string input_number, vector<mpz_class> & new_factors ) {
 	delete_file( "factor.log" );	//remove old log...
-	
+
 	string hide_output = "";
 	if( input_number.size() < cfg.hide_output_limit ) {
 		hide_output = " > " + cfg.null_device;	//avoid spamming the screen when factorisation just takes a couple of seconds
@@ -404,7 +404,7 @@ int run_yafu( string input_number, vector<mpz_class> & new_factors ) {
 //returns #factors found
 int run_factor( string input_number, vector<mpz_class> & new_factors, bool no_ecm, bool pretest_only ) {
 	delete_file( "factor.log" );	//remove old log...
-	
+
 	string hide_output = "";
 	if( input_number.size() < cfg.hide_output_limit ) {
 		hide_output = " > " + cfg.null_device;	//avoid spamming the screen when factorisation just takes a couple of seconds
@@ -509,7 +509,7 @@ bool convert_poly( string infile, string poly_name ) {
 	for( map<string,pair<string,bool> >::iterator i = args.begin(); i != args.end(); ++i ) {
 		if( !i->second.second ) {
 			cout << "WARNING: didn't find required parameter: " << i->first << endl;
-			delete_file( outfile.c_str() );	//delete this poly file and let ggnfs find its own poly
+			delete_file( outfile );	//delete this poly file and let ggnfs find its own poly
 			return false;
 		}
 	}
@@ -539,8 +539,11 @@ int run_gnfs( string input_number, vector<mpz_class> & new_factors ) {
 		run_msieve_polyfind( input_number, "test" );
 	}
 
-	system( ( cfg.ggnfs_cmd + " test" ).c_str() );
+	system( ( cfg.ggnfs_cmd + " " + dir + "/test" ).c_str() );
 	int num_found = find_log_factors( "ggnfs.log", input_number, "factor:", "factor:", new_factors );	//factMsieve.pl syntax
+	if( !num_found ) {
+		num_found = find_log_factors( "test.log", input_number, "factor:", "factor:", new_factors ); //factmsieve.py syntax
+	}
 	if( !num_found ) {
 		num_found = find_log_factors( "ggnfs.log", input_number, "-> p: ", "-> p: ", new_factors );	//factLat.pl syntax
 	}
@@ -628,7 +631,7 @@ bool factor( mpz_class n, vector<pair<mpz_class,int> > & factors, vector<mpz_cla
                                 }
                         } else if( run_factor( input, new_factors, skip_ecm, false ) ) {
 				// yafu factored the number
-			} else {				
+			} else {
 				run_ecm_autoinc( input, new_factors, true );
 			}
 			add_factors( n, factors, new_factors );
@@ -792,7 +795,7 @@ void parse_elf( mpz_class & seq, int & index, mpz_class & n, mpz_class & last_n,
 		}
 
 		add_and_check_cycle( index, n );
-		check_merge( seq, n );
+		check_merge( seq, n, index );
 
 		prev_index = index;
 		++index;	//start computation at next line if this is the last
@@ -902,7 +905,7 @@ bool submit_elf( mpz_class & seq, int from_iteration ) {
 	fo.close();
 	cout << "Sending " << sent_lines << " lines..." << endl;
 	system( ( "wget --cache=off --output-document=" + tmp_file + " --post-file=" + post_file + " http://factorization.ath.cx/search.php?report=true" ).c_str() );
-	delete_file( post_file.c_str() );
+	delete_file( post_file );
 
 	f.clear();
 	f.open( tmp_file.c_str() );
@@ -913,7 +916,7 @@ bool submit_elf( mpz_class & seq, int from_iteration ) {
 		}
 	}
 	f.close();
-	delete_file( tmp_file.c_str() );
+	delete_file( tmp_file );
 	return true;
 }
 
@@ -935,11 +938,11 @@ int main( int argc, char ** argv ) {
 	int max_cofactor = 0;
 	int max_digits = 0;
 	int max_ecm_level = 0;
-	bool both_digits_and_cofactor = false;
-        bool exit_only_with_driver = false;
-        int no_driver_extra = 0;
+    bool both_digits_and_cofactor = false;
+    bool exit_only_with_driver = false;
+    int no_driver_extra = 0;
 
-	for( int j = 1; j < argc; ) {
+    for( int j = 1; j < argc; ) {
 		if( argv[j][0] == '-' ) {
 			if( argv[j][1] == 'e' ) {
 				skip_ecm = true;
@@ -1061,7 +1064,7 @@ int main( int argc, char ** argv ) {
 	vector<pair<mpz_class,int> > factors;	//vector<pair<p_i,x_i> >, n = product(p_i^x_i)
 
 	find_previous_factors( n, external_factors );	//see if we can find any previously found factors
-	
+
 	for( ; n != 1; ++index ) {
 		bool max_digits_reached = false;
 		bool require_both_digits_and_cofactor = both_digits_and_cofactor && max_digits > 0 && max_cofactor > 0;
@@ -1094,11 +1097,11 @@ int main( int argc, char ** argv ) {
                 else if (sm_fac[2] == 2 && sm_fac[7] == 1)      { driver = "Driver: 2^2 * 7";            found_driver = true; }
                 else if (sm_fac[2] == 4 && sm_fac[31] == 1)     { driver = "Driver: 2^4 * 31";           found_driver = true; }
                 else if (sm_fac[2] == 6 && sm_fac[127] == 1)    { driver = "Driver: 2^6 * 127";          found_driver = true; }
-                else if (sm_fac[2] == 3 && sm_fac[3] == 1 && 
+                else if (sm_fac[2] == 3 && sm_fac[3] == 1 &&
                          sm_fac[5] == 1)                        { driver = "Driver: 2^3 * 3 * 5";        found_driver = true; }
-                else if (sm_fac[2] == 3 && sm_fac[3] == 1 && 
+                else if (sm_fac[2] == 3 && sm_fac[3] == 1 &&
                          sm_fac[7] == 1)                        { driver = "Driver: 2^3 * 3 * 7";        found_driver = true; }
-                else if (sm_fac[2] == 9 && sm_fac[3] == 1 && 
+                else if (sm_fac[2] == 9 && sm_fac[3] == 1 &&
                          sm_fac[11] == 1 && sm_fac[31] == 1)    { driver = "Driver: 2^9 * 3 * 11 * 31";  found_driver = true; }
                 else if (sm_fac[2] == 3 && sm_fac[3] == 1)      { driver = "Driver: 2^3 * 3";            found_driver = true; }
                 else if (sm_fac[2] == 2 && sm_fac[3] != 0)      { driver = "Guide: 2^2 with 3"; }
@@ -1117,7 +1120,7 @@ int main( int argc, char ** argv ) {
                 }
 
                 cout << "next driver: " << driver << "\r";
-                
+
 		log_msg( "\n\n\n", false );
 		if( max_digits > 0 && (int)n.get_str().size() >= max_digits ) {
 			if( require_both_digits_and_cofactor || (!found_driver && exit_only_with_driver) ) {
@@ -1138,7 +1141,7 @@ int main( int argc, char ** argv ) {
 		}
 		if( !factor( n, factors, external_factors, true, curr_max_cofactor, max_ecm_level ) ) {
 			if( require_both_digits_and_cofactor ) {
-				log_msg( "*** Max cofactor size " + tostring( max_cofactor ) +  " and max digits " + tostring( max_digits) + 
+				log_msg( "*** Max cofactor size " + tostring( max_cofactor ) +  " and max digits " + tostring( max_digits) +
 					" reached for sequence " + seq.get_str() + ":" + tostring( index ) + " = " + n.get_str()
 					+ " (" + tostring( n.get_str().size() ) + " digits)\n" );
 				cout << endl << "Max digits and cofactor reached" << endl;
@@ -1150,7 +1153,7 @@ int main( int argc, char ** argv ) {
 			exit( 0 );
 		}
 
-		string msg1 = " " + tostring( index ) + " .\t ";
+		string msg1 = tostring( index ) + " .\t ";
 		string msg2 =  n.get_str() + " = ";
 		for( size_t j = 0; j < factors.size(); ++j ) {
 			if( j ) msg2 += " * ";
@@ -1169,7 +1172,7 @@ int main( int argc, char ** argv ) {
 		}
 
 		add_and_check_cycle( index, n );
-		check_merge( seq, n );
+		check_merge( seq, n , index);
 
                 last_n = n;
 		n = s - n;	//next sequence value
