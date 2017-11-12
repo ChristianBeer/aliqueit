@@ -1,9 +1,9 @@
 
-#include "cfg.h"
-#include "misc.h"
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include "cfg.h"
+#include "misc.h"
 using namespace std;
 
 cfg_t::cfg_t() {

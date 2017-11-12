@@ -655,7 +655,7 @@ bool factor( mpz_class n, vector<pair<mpz_class,int> > & factors, vector<mpz_cla
 						<< "I'll cheerfully loop and try again though..." << endl;
 				}
 			} else {	//bring out the big gnfs guns then
-                if (!run_gnfs( input, new_factors )) {
+				if (!run_gnfs( input, new_factors )) {
                     if (cfg.stop_failed_gnfs) {
                         cout << "WARNING: gnfs failed to find a factor. This really shouldn't happen." << endl
                             << "I'll just run ecm till the end of time or a factor turns up..." << endl
@@ -910,7 +910,7 @@ bool submit_elf( mpz_class & seq, int from_iteration ) {
 	fo << post_data;
 	fo.close();
 	cout << "Sending " << sent_lines << " lines..." << endl;
-	system( ( "wget --cache=off --output-document=" + tmp_file + " --post-file=" + post_file + " http://factorization.ath.cx/search.php?report=true" ).c_str() );
+	system( ( "wget --cache=off --output-document=" + tmp_file + " --post-file=" + post_file + " http://factordb.com/report.php" ).c_str() );
 	delete_file( post_file );
 
 	f.clear();
@@ -1145,7 +1145,24 @@ int main( int argc, char ** argv ) {
 			//For this case we don't have both so want a zero max_ecm_level to do full factoring
 			curr_max_cofactor = 0;
 		}
-		if( !factor( n, factors, external_factors, true, curr_max_cofactor, max_ecm_level ) ) {
+        // factor the current index and save the return value
+        bool res_factor = factor( n, factors, external_factors, true, curr_max_cofactor, max_ecm_level );
+
+        merge_factors(factors);
+
+        // save the current index to file even if it is incomplete
+        string msg1 = tostring( index ) + " .\t ";
+		string msg2 =  n.get_str() + " = ";
+		for( size_t j = 0; j < factors.size(); ++j ) {
+			if( j ) msg2 += " * ";
+			msg2 += factors[j].first.get_str() + ( factors[j].second > 1 ? ( "^" + tostring( factors[j].second ) ) : "" );
+		}
+        string msg3 = " : " + driver;
+		save_result( seq, msg1 + msg2 + "\n" );
+		cout << msg1 << ( factors.size() == 1 && factors[0].second == 1 ? "prp" : "c" ) << n.get_str().size() << " = " << msg2 << msg3 << endl;
+
+        // look at the return value from factor again we may have to exit
+		if( !res_factor ) {
 			if( require_both_digits_and_cofactor ) {
 				log_msg( "*** Max cofactor size " + tostring( max_cofactor ) +  " and max digits " + tostring( max_digits) +
 					" reached for sequence " + seq.get_str() + ":" + tostring( index ) + " = " + n.get_str()
@@ -1158,16 +1175,6 @@ int main( int argc, char ** argv ) {
 			}
 			exit( 0 );
 		}
-
-		string msg1 = tostring( index ) + " .\t ";
-		string msg2 =  n.get_str() + " = ";
-		for( size_t j = 0; j < factors.size(); ++j ) {
-			if( j ) msg2 += " * ";
-			msg2 += factors[j].first.get_str() + ( factors[j].second > 1 ? ( "^" + tostring( factors[j].second ) ) : "" );
-		}
-                string msg3 = " : " + driver;
-		save_result( seq, msg1 + msg2 + "\n" );
-		cout << msg1 << ( factors.size() == 1 && factors[0].second == 1 ? "prp" : "c" ) << n.get_str().size() << " = " << msg2 << msg3 << endl;
 
 		mpz_class s,verify_n;
 		sigma( factors, s, verify_n );	//calculate sigma(n) and verify_n = product(factors)
