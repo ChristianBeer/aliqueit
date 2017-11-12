@@ -1,9 +1,9 @@
 
-#include "cfg.h"
-#include "misc.h"
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include "cfg.h"
+#include "misc.h"
 using namespace std;
 
 cfg_t::cfg_t() {
@@ -16,6 +16,9 @@ cfg_t::cfg_t() {
 
 	//Stop if sequence merges with an earlier sequence?
 	detect_merge = true;
+
+    //Stop if gnfs poly couldn't be found or gnfs failed, otherwise run autoincreasing ecm until factor found
+    stop_failed_gnfs = false;
 
 	//Trial factor with primes < this value.
 	trial_cutoff = 10000;
@@ -96,12 +99,12 @@ cfg_t::cfg_t() {
 	//1000 curves ~ B1=2.25e6
 	//For <65 digits I've experimentally found these values to be good on my machine. Improvements are always welcome!
 	//NOTE: These values are only used for composites < <big_ecm_cutoff> digits. See that setting below.
-	ecm_depth = 
+	ecm_depth =
 		"45 10, 50 15, 55 20, 60 30, 65 40, 70 60, 73 90, 76 120, 79 150, 82 180, "
 		"83 200, 86 300, 90 400, 93 500, 96 600, 99 700, 102 800, 106 900, 110 1000, 114 1100, 118 1200, 122 1300, ";
 
 	//If composite has more than <big_ecm_cutoff> digits, we will try to do ecm for about 1/4 of the estimated time qs/nfs would take.
-	//I've used logs of previous factorisations on my machine to construct the estimates that are used. They have been converted to 
+	//I've used logs of previous factorisations on my machine to construct the estimates that are used. They have been converted to
 	//linear formulas taking the composite size as input and giving maximum factor size (see Table 1 in gmp-ecm readme) as output.
 	//See also qs_k, qs_m, gnfs_k, and gnfs_m below.
 	big_ecm_cutoff = 65;
@@ -181,7 +184,7 @@ void cfg_t::read_config_file() {
 		string arg = tolower( trim( line.substr( 0, o ) ) );	//arg name
 		string val = trim( line.substr( o + 1 ) );		//value
 		//cout << arg << " = " << val << endl;
-		
+
 		//assign values...
 		if( arg == "trial_cutoff" ) {
 			trial_cutoff = get_uint( val );
@@ -219,6 +222,8 @@ void cfg_t::read_config_file() {
 			null_device = val;
 		} else if( arg == "detect_merge" ) {
 			detect_merge = get_bool( val );
+        } else if( arg == "stop_failed_gnfs" ) {
+			stop_failed_gnfs = get_bool( val );
 		} else if( arg == "big_ecm_cutoff" ) {
 			big_ecm_cutoff = get_uint( val );
 		} else if( arg == "neat_factor_limit_ecm" ) {

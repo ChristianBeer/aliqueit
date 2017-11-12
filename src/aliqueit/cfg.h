@@ -9,6 +9,7 @@ class cfg_t {
 public:
 	bool use_msieve_polyfind;
 	bool detect_merge;
+    bool stop_failed_gnfs;
 	unsigned int trial_cutoff;
 	unsigned int gnfs_cutoff;
 	bool prefer_yafu;
