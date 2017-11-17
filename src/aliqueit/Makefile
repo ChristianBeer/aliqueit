@@ -3,7 +3,7 @@
 #
 
 # you'll need to change this if your gmp headers aren't installed globally:
-GMP_DIR = ../gmp
+GMP_DIR = ../../../../gmp
 
 CC = g++
 CFLAGS = -O3 -I$(GMP_DIR)
