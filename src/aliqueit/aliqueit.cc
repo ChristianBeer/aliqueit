@@ -791,13 +791,13 @@ void parse_elf(mpz_class & seq, int & index, mpz_class & n, mpz_class & last_n, 
                     log_and_print(error_header + "not a number: " + s + "\n");
                     exit(1);
                 }
-                factors.push_back(make_pair(p, atoi(e.c_str())));
+                factors.push_back(make_pair(mpz_class(p), atoi(e.c_str())));
             } else {
                 if (!isnumber(s)) {
                     log_and_print(error_header + "not a number: " + s + "\n");
                     exit(1);
                 }
-                factors.push_back(make_pair(s, 1));
+                factors.push_back(make_pair(mpz_class(s), 1));
             }
         }
         sigma(factors, smn, vn);
