@@ -673,12 +673,18 @@ bool factor(mpz_class n, vector<pair<mpz_class, int> > & factors, vector<mpz_cla
                 return false;
             } else if (input.size() < cfg.gnfs_cutoff) {
                 if (!run_qs(input, new_factors)) {
-                    cout << "WARNING: qs failed to find a factor. This really shouldn't happen." << endl
-                            << "I'll cheerfully loop and try again though..." << endl;
+                    if (!cfg.stop_on_failure) {
+                        cout << "WARNING: qs failed to find a factor. This really shouldn't happen." << endl
+                                << "I'll cheerfully loop and try again though..." << endl;
+                    } else {
+                      cout << "WARNING: qs failed to find a factor. This really shouldn't happen." << endl;
+                      log_msg("*** qs failed to find a factor. Ending.\n");
+                      return false;
+                    }
                 }
             } else { //bring out the big gnfs guns then
                 if (!run_gnfs(input, new_factors)) {
-                    if (cfg.stop_failed_gnfs) {
+                    if (!cfg.stop_on_failure) {
                         cout << "WARNING: gnfs failed to find a factor. This really shouldn't happen." << endl
                                 << "I'll just run ecm till the end of time or a factor turns up..." << endl
                                 << "Let's hope you don't run out of disk space before either of those." << endl;
@@ -1198,7 +1204,7 @@ int main(int argc, char ** argv) {
         log_msg("*** Starting " + seq.get_str() + ":" + tostring(index) + " = " + n.get_str() + " (" + tostring(n.get_str().size()) + " digits)\n");
         curr_max_cofactor = max_cofactor;
         if ((require_both_digits_and_cofactor && !max_digits_reached) || (!found_driver && exit_only_with_driver)) {
-            //For this case we don't have both so want a zero max_ecm_level to do full factoring
+            //For this case we don't have both so want a zero max_cofactor to do full factoring
             curr_max_cofactor = 0;
         }
         // factor the current index and save the return value

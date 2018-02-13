@@ -17,8 +17,8 @@ cfg_t::cfg_t() {
     //Stop if sequence merges with an earlier sequence?
     detect_merge = true;
 
-    //Stop if gnfs poly couldn't be found or gnfs failed, otherwise run autoincreasing ecm until factor found
-    stop_failed_gnfs = false;
+    //Stop on qs or gnfs failures, otherwise try again or run autoincreasing ecm until factor found
+    stop_on_failure = false;
 
     //Trial factor with primes < this value.
     trial_cutoff = 10000;
@@ -222,8 +222,8 @@ void cfg_t::read_config_file() {
             null_device = val;
         } else if (arg == "detect_merge") {
             detect_merge = get_bool(val);
-        } else if (arg == "stop_failed_gnfs") {
-            stop_failed_gnfs = get_bool(val);
+        } else if (arg == "stop_on_failure") {
+            stop_on_failure = get_bool(val);
         } else if (arg == "big_ecm_cutoff") {
             big_ecm_cutoff = get_uint(val);
         } else if (arg == "neat_factor_limit_ecm") {
