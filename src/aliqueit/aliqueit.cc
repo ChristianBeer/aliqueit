@@ -746,7 +746,7 @@ void parse_elf(mpz_class & seq, int & index, mpz_class & n, mpz_class & last_n, 
     ifstream f(get_elf_name(seq).c_str());
     if (!f.is_open()) {
         log_and_print("WARNING: couldn't open elf file.\n");
-        return;
+        exit(1);
     }
 
     streampos line_start_offset = 0;
@@ -814,6 +814,9 @@ void parse_elf(mpz_class & seq, int & index, mpz_class & n, mpz_class & last_n, 
                 f.close();
                 if (only_verify) {
                     log_and_print(warning_header + "partial last line.\n");
+                    if (cfg.verify_terminations) {
+                        exit(1);
+                    }
                     return; //don't truncate file if we're only verifying
                 }
                 log_and_print(warning_header + "partial last line. Resuming...\n");
@@ -841,6 +844,10 @@ void parse_elf(mpz_class & seq, int & index, mpz_class & n, mpz_class & last_n, 
     f.close();
     last_n = n;
     n = smn;
+    if (only_verify && cfg.verify_terminations && n != 1) {
+        log_and_print("\nERROR: @index " + tostring(index-1) + ": " + "sigma(n) != 1\n");
+        exit(1);
+    }
     log_and_print("Elf " + seq.get_str() + " verified OK!\n");
 }
 
@@ -1082,6 +1089,10 @@ int main(int argc, char ** argv) {
         if (index || n != 0) {
             cout << "ERROR: verify mode doesn't accept index parameters." << endl;
             return 1;
+        }
+        if (cfg.verify_terminations && cfg.detect_merge) {
+          cout << "ERROR: verify_terminations mode needs detect_merge to be off." << endl;
+          return 1;
         }
         parse_elf(seq, index, n, last_n, external_factors, true); //verify elf file
         return 0; //return OK. Any error will have triggered an exit( 1 ) already

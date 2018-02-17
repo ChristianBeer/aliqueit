@@ -20,6 +20,9 @@ cfg_t::cfg_t() {
     //Stop on qs or gnfs failures, otherwise try again or run autoincreasing ecm until factor found
     stop_on_failure = false;
 
+    //When -t is used exit with 0 if sequence in elf is correct and terminates, exit nonzero otherwise
+    verify_terminations = false;
+
     //Trial factor with primes < this value.
     trial_cutoff = 10000;
 
@@ -224,6 +227,8 @@ void cfg_t::read_config_file() {
             detect_merge = get_bool(val);
         } else if (arg == "stop_on_failure") {
             stop_on_failure = get_bool(val);
+        } else if (arg == "verify_terminations") {
+            verify_terminations = get_bool(val);
         } else if (arg == "big_ecm_cutoff") {
             big_ecm_cutoff = get_uint(val);
         } else if (arg == "neat_factor_limit_ecm") {

@@ -10,6 +10,7 @@ public:
     bool use_msieve_polyfind;
     bool detect_merge;
     bool stop_on_failure;
+    bool verify_terminations;
     unsigned int trial_cutoff;
     unsigned int gnfs_cutoff;
     bool prefer_yafu;
