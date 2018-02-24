@@ -902,7 +902,7 @@ void find_previous_factors(mpz_class & n, vector<mpz_class> & factors) {
 
 void print_help() {
     cout << "aliqueit " << version << " by Mikael Klasson 2009-2010, http://mklasson.com" << endl
-            << "usage: aliqueit [-i <index> <start_value>] [-f <factor>] [-s <start>] [-y] [-e] [-p] [-t] [-q]" << endl
+            << "usage: aliqueit [-i <index> <start_value>] [-f <factor>] [-s <start>] [-y] [-e] [-p] [-t] [-u] [-q]" << endl
             << "                [-d <max_digits>] [-c <max_cofactor>] [-r <add_digits>] [-m <max_ecm_level>] [-b] <seq>" << endl
             << "  Computes the aliquot sequence starting at <seq>." << endl
             << "  <factor> will be tested against the next sequence value." << endl
@@ -920,7 +920,8 @@ void print_help() {
             << "  -m ecm will only run to level <max_ecm_level> where '1'=20-digit factor, '2'=25, etc." << endl
             << "  -s submits the iterations <start>+ from <seq>'s elf file to Syd's DB." << endl
             << "    You'll need wget to use -s." << endl
-            << "  -t quits after verifying elf file integrity." << endl;
+            << "  -t quits after verifying elf file integrity." << endl
+            << "  -u verifies elf file integrity but also checks for termination (overrides verify_terminations from config file)." << endl;
 }
 
 //submits the elf file belonging to sequence <seq> to Syd's DB.
@@ -1012,6 +1013,10 @@ int main(int argc, char ** argv) {
                 ++j;
             } else if (argv[j][1] == 't') {
                 quit_after_verify = true;
+                ++j;
+            } else if (argv[j][1] == 'u') {
+                quit_after_verify = true;
+                cfg.verify_terminations = true;
                 ++j;
             } else if (argv[j][1] == 's') { //submit elf to Syd's DB
                 submit = true;
