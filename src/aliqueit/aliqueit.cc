@@ -654,6 +654,10 @@ bool factor(mpz_class n, vector<pair<mpz_class, int> > & factors, vector<mpz_cla
                 }
             } else if (run_factor(input, new_factors, skip_ecm, false)) {
                 // yafu factored the number
+            } else if (cfg.stop_on_failure) {
+                cout << "WARNING: yafu failed to find a factor. This really shouldn't happen." << endl;
+                log_msg("*** yafu failed to find a factor. Ending.\n");
+                return false;
             } else {
                 run_ecm_autoinc(input, new_factors, true);
             }
