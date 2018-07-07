@@ -5,26 +5,27 @@
 //http://mklasson.com
 //
 //Additional code by Greebley, bsquared, and bchaffin.
+//Christian Beer 2015-2018 with permission from mklasson
 
 
-A C++ program for computing and verifying aliquot sequences. Designed to be run 
+A C++ program for computing and verifying aliquot sequences. Designed to be run
 autonomously.
 
-The actual computations are mostly done with external programs. Trial division 
-and Pollard rho are done internally, P-1/P+1/ECM are done with GMP-ECM, QS is 
-done with Msieve or YAFU, and GNFS is done with ggnfs. Aliqueit tries to 
-minimise the time spent factoring by running different methods to different 
+The actual computations are mostly done with external programs. Trial division
+and Pollard rho are done internally, P-1/P+1/ECM are done with GMP-ECM, QS is
+done with Msieve or YAFU, and GNFS is done with ggnfs. Aliqueit tries to
+minimise the time spent factoring by running different methods to different
 depths depending on the composite size.
 
-The config file is configured for my system so you'll need to set proper 
-executable names and whatnot. Moreover, if you're not running windows you'll 
+The config file is configured for my system so you'll need to set proper
+executable names and whatnot. Moreover, if you're not running windows you'll
 want to change null_device and ggnfs_clean_cmd.
 
-The program is most simply started with "aliqueit 162126" if you want to work 
+The program is most simply started with "aliqueit 162126" if you want to work
 on sequence 162126.
 
-The first thing it does in that case is verify correctness of the existing 
-alq_162126.elf file (just takes a second or two), after which it resumes where 
+The first thing it does in that case is verify correctness of the existing
+alq_162126.elf file (just takes a second or two), after which it resumes where
 the elf file ends.
 
 Known factors can be specified with one or more "-f <factor>" arguments.
@@ -35,44 +36,39 @@ Known factors can be specified with one or more "-f <factor>" arguments.
 
 "-q" quits after factoring the first number.
 
-"-s <start>" submits the given sequence's elf file to Syd's DB, starting with 
+"-s <start>" submits the given sequence's elf file to Syd's DB, starting with
 iteration <start>. You'll need wget to use this.
 
 "-d <max_digits>" quits after sequence reaches <max_digits> digits.
 
-"-c <max_cofactor>" quits after sequence passes ecm with a cofactor of 
+"-c <max_cofactor>" quits after sequence passes ecm with a cofactor of
 <max_cofactor> or more digits.
 
 "-b" with -c and -d quits after a number meets both limits.
 
-"-m <max_ecm_level>" ecm will only run to level <max_ecm_level> where 
+"-m <max_ecm_level>" ecm will only run to level <max_ecm_level> where
 '1'=20-digit factor, '2'=25, etc.
 
-You can start working at an arbitrary offset using "-i <index> <start_value>" 
+You can start working at an arbitrary offset using "-i <index> <start_value>"
 argument, e.g.: "aliqueit 162126 -i 10 13169790".
 
-The ecm depth settings seem pretty optimal for <65 digits. For composites of 70 
-digits or more the ecm depth is tuned to make the total ecm work take about 1/4 
+The ecm depth settings seem pretty optimal for <65 digits. For composites of 70
+digits or more the ecm depth is tuned to make the total ecm work take about 1/4
 of the time a qs/gnfs run would. I'd be happy to hear of better ideas.
 
-I've included win32 and win64 executables. The latter isn't really faster as 
-the time spent in the program itself is insignificant compared to the external 
+I've included win32 and win64 executables. The latter isn't really faster as
+the time spent in the program itself is insignificant compared to the external
 factorisation programs. I just like to run native programs when possible.
 
-I'm normally compiling the program with MSVC 2008. Solution/project files for 
-that scenario are included. A simple Makefile is also included for linux. 
-You'll need the gmp lib to compile on either platform. A consequence of the 
-MSVC 2008 compilation is that the executable won't run on windows versions 
-earlier than win2k. If you need to run on an older OS I can probably cook up 
-another executable for you if you ask me.
+See Readme.md for how to compile the application.
 
 Comments and suggestions are most welcome.
 
-You may use the source and program however you see fit. I accept no 
-responsibility for anything untoward that may happen to you, though I have no 
-reason to suspect any such thing should happen. In the land of the free they 
-are happy to try and sue you for anything though. You may not use this program 
-unless you accept this agreement and take responsibility for your own actions. 
+You may use the source and program however you see fit. I accept no
+responsibility for anything untoward that may happen to you, though I have no
+reason to suspect any such thing should happen. In the land of the free they
+are happy to try and sue you for anything though. You may not use this program
+unless you accept this agreement and take responsibility for your own actions.
 Otherwise, no soup for you!
 
 Cheers,
@@ -81,12 +77,12 @@ Mikael
 
 Links to various excellent factoring programs:
 aliqueit would be worthless without these, so cheers for them!
-Precompiled versions of most everything, incl. x64 versions: 
+Precompiled versions of most everything, incl. x64 versions:
 http://gilchrist.ca/jeff/factoring/
 GGNFS: http://tech.groups.yahoo.com/group/ggnfs/
 GMP-ECM: http://gforge.inria.fr/projects/ecm/
 Msieve: http://www.boo.net/~jasonp/qs.html
 YAFU: http://bbuhrow.googlepages.com/home
 
-If you have problems getting ggnfs up and running, check out 
+If you have problems getting ggnfs up and running, check out
 http://www.mersenneforum.org/showpost.php?p=176126&postcount=11

@@ -5,7 +5,7 @@
 //http://mklasson.com
 //
 //Additional code by Greebley, bsquared, and bchaffin.
-
+//Christian Beer 2015-2018 with permission from mklasson
 
 #include <vector>
 #include <map>
@@ -1187,6 +1187,8 @@ int main(int argc, char ** argv) {
         string driver = "No driver";
         bool found_driver;
 
+        log_msg("*** max_digits =  " + tostring(max_digits) + " no_driver_extra =  " + tostring(no_driver_extra) + " n.size() = " + tostring(n.get_str().size()) +"\n");
+
         // Real drivers will set found_driver to true, and beneficial patterns will set it to false.
         // For guides, we set the default here so that if we're below the digit cutoff we'll keep going,
         // and above it we'll stop.
@@ -1289,6 +1291,8 @@ int main(int argc, char ** argv) {
             //For this case we don't have both so want a zero max_cofactor to do full factoring
             curr_max_cofactor = 0;
         }
+        log_msg("*** found_driver =  " + (string)(found_driver?"true":"false") + " driver = " + driver +"\n");
+        log_msg("*** curr_max_cofactor =  " + tostring(curr_max_cofactor) + " max_cofactor = " + tostring(max_cofactor) +"\n");
         // factor the current index and save the return value
         bool res_factor = factor(n, factors, external_factors, true, curr_max_cofactor, max_ecm_level);
 
