@@ -28,10 +28,11 @@
 using namespace std;
 
 
-const string version = "v1.12";
+const string version = "v1.13";
 
 
 vector<unsigned int> trial_primes; //precalced primes for trial factoring
+vector<pair<unsigned int, mpz_class> > mersenne_primes; //storage for pre calculated mersenne primes
 
 map<mpz_class, unsigned int> seq_values; //seq_value -> index. cached sequence values. Used to detect cycles
 
@@ -68,6 +69,27 @@ void precalc_trial_primes() {
         trial_primes.push_back(p.get_ui());
         mpz_nextprime(p.get_mpz_t(), p.get_mpz_t());
     }
+}
+
+void add_mersenne_prime(unsigned int p) {
+    mpz_class mp(0);
+    mpz_ui_pow_ui(mp.get_mpz_t(), 2, p);
+    mp--;
+    mersenne_primes.push_back(make_pair(p, mp));
+}
+
+void precalc_mersenne_primes() {
+    cout << "Preloading mersenne primes for trial factoring..." << endl;
+    // no primality testing is done to those, make sure those are prime before adding here
+    add_mersenne_prime(13);
+    add_mersenne_prime(17);
+    add_mersenne_prime(19);
+    add_mersenne_prime(31);
+    add_mersenne_prime(61);
+    add_mersenne_prime(89);
+    add_mersenne_prime(107);
+    add_mersenne_prime(127);
+    // driver/guide detection will only use the first 8 but factor() will use all
 }
 
 //sorts factors and merges any <p,x>,<p,y> into <p,x+y>
@@ -637,6 +659,13 @@ bool factor(mpz_class n, vector<pair<mpz_class, int> > & factors, vector<mpz_cla
             trial_success = true;
         }
     }
+    for (size_t j = 0; j < mersenne_primes.size(); ++j) {
+        while (mpz_divisible_p(n.get_mpz_t(), mersenne_primes[j].second.get_mpz_t())) {
+            found_factor(mersenne_primes[j].second, factors);
+            mpz_divexact(n.get_mpz_t(), n.get_mpz_t(), mersenne_primes[j].second.get_mpz_t());
+            trial_success = true;
+        }
+    }
     if (trial_success) {
         log_cofactor(n);
     }
@@ -1116,6 +1145,7 @@ int main(int argc, char ** argv) {
     }
 
     precalc_trial_primes();
+    precalc_mersenne_primes();
 
     cout << "seq = " << seq.get_str() << endl;
     cout << "index = " << index << endl;
@@ -1139,6 +1169,18 @@ int main(int argc, char ** argv) {
             while (mpz_divisible_ui_p(n_tmp.get_mpz_t(), trial_primes[j])) {
                 sm_fac[ trial_primes[j] ]++;
                 mpz_divexact_ui(n_tmp.get_mpz_t(), n_tmp.get_mpz_t(), trial_primes[j]);
+            }
+        }
+        // do trial devision with first 8 precalculated mersenne primes, factor() does it again, see comment above
+        // this should not overlap with the factors tested above!
+        int mp_fac[8];
+        memset(mp_fac, 0, sizeof (mp_fac));
+        bool found_mp_fac = false;
+        for (size_t j = 0; j < mersenne_primes.size() && j < 8; ++j) {
+            while (mpz_divisible_p(n_tmp.get_mpz_t(), mersenne_primes[j].second.get_mpz_t())) {
+                mp_fac[j]++;
+                mpz_divexact(n_tmp.get_mpz_t(), n_tmp.get_mpz_t(), mersenne_primes[j].second.get_mpz_t());
+                found_mp_fac = true;
             }
         }
 
@@ -1173,6 +1215,10 @@ int main(int argc, char ** argv) {
                 sm_fac[7] == 1) {
             driver = "Driver: 2^3 * 3 * 7";
             found_driver = true;
+        } else if (sm_fac[2] == 5 && sm_fac[3] == 1 &&
+                sm_fac[7] == 1) {
+            driver = "Driver: 2^5 * 3 * 7";
+            found_driver = true;
         } else if (sm_fac[2] == 9 && sm_fac[3] == 1 &&
                 sm_fac[11] == 1 && sm_fac[31] == 1) {
             driver = "Driver: 2^9 * 3 * 11 * 31";
@@ -1190,6 +1236,10 @@ int main(int argc, char ** argv) {
             driver = "Guide: 2^3 with 3";
         } else if (sm_fac[2] == 5 && sm_fac[3] == 1) {
             driver = "Guide: 2^5 * 3";
+        } else if (sm_fac[2] == 8 && sm_fac[3] == 0 &&
+                sm_fac[5] == 0 && sm_fac[7] == 1 &&
+                sm_fac[73] == 1) {
+            driver = "Guide: 2^8 * 7 * 73";
         } else if (sm_fac[2] == 1 && sm_fac[3] == 0) {
             driver = "Downdriver!";
             found_driver = false;
@@ -1199,6 +1249,18 @@ int main(int argc, char ** argv) {
         } else if (sm_fac[2] >= 8) {
             driver = "Large power of 2";
             found_driver = false;
+        }
+
+        if (found_mp_fac) {
+            driver = "Driver: 2^" + tostring(sm_fac[2]);
+            for (size_t j = 0; j < 8; ++j) {
+                if (mp_fac[j] == 1) {
+                    driver += " * M" + tostring(mersenne_primes[j].first);
+                } else if (mp_fac[j] >= 2) {
+                    driver += " * M" + tostring(mersenne_primes[j].first) + "^" + tostring(mp_fac[j]);
+                }
+            }
+            found_driver = true;
         }
 
         // If the sequence decreased, I don't care what pattern we found -- keep going!
