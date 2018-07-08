@@ -612,14 +612,16 @@ void log_cofactor(mpz_class & n) {
 
 //tests <new_factors> against <n> and if valid adds them to <factors> and removes them from <n>
 
-void add_factors(mpz_class & n, vector<pair<mpz_class, int> > & factors, vector<mpz_class> & new_factors) {
+void add_factors(mpz_class & n, vector<pair<mpz_class, int> > & factors, vector<mpz_class> & new_factors, bool nowarn_invalid = false) {
     vector<mpz_class> empty_dummy;
     for (size_t j = 0; j < new_factors.size(); ++j) {
         if (!mpz_divisible_p(n.get_mpz_t(), new_factors[j].get_mpz_t())) {
             //check if gcd>1
             mpz_gcd(new_factors[j].get_mpz_t(), n.get_mpz_t(), new_factors[j].get_mpz_t());
             if (new_factors[j] == 1) {
-                log_and_print("WARNING: factor doesn't divide n\n");
+                if (!nowarn_invalid) {
+                    log_and_print("WARNING: factor doesn't divide n\n");
+                }
                 continue;
             }
         }
@@ -640,7 +642,17 @@ void add_factors(mpz_class & n, vector<pair<mpz_class, int> > & factors, vector<
 
 bool factor(mpz_class n, vector<pair<mpz_class, int> > & factors, vector<mpz_class> & new_factors, bool clear_factors, int max_cofactor, int max_ecm_level) {
     if (clear_factors) {
-        factors.clear();
+        // copy old factors and try them on new n, maybe we are lucky
+        if (factors.size()) {
+            vector<mpz_class> old_factors;
+            for (size_t j = 0; j < factors.size(); ++j) {
+                old_factors.push_back(factors[j].first);
+            }
+            factors.clear();
+            add_factors(n, factors, old_factors, true);
+        } else {
+            factors.clear();
+        }
     }
     if (n == 1 || mpz_probab_prime_p(n.get_mpz_t(), 25)) {
         found_factor(n, factors);
