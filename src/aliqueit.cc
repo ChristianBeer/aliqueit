@@ -628,6 +628,11 @@ void add_factors(mpz_class & n, vector<pair<mpz_class, int> > & factors, vector<
         mpz_divexact(n.get_mpz_t(), n.get_mpz_t(), new_factors[j].get_mpz_t());
         if (mpz_probab_prime_p(new_factors[j].get_mpz_t(), 25)) {
             found_factor(new_factors[j], factors);
+            // try if factor divides again
+            while (mpz_divisible_p(n.get_mpz_t(), new_factors[j].get_mpz_t())) {
+                found_factor(new_factors[j], factors);
+                mpz_divexact(n.get_mpz_t(), n.get_mpz_t(), new_factors[j].get_mpz_t());
+            }
         } else {
             log_msg("*** c" + tostring(new_factors[j].get_str().size()) + " = " + new_factors[j].get_str() + "\n");
             factor(new_factors[j], factors, empty_dummy, false); //factor the found factor further and add its prime components to <factors>
