@@ -5,7 +5,7 @@
 //http://mklasson.com
 //
 //Additional code by Greebley, bsquared, and bchaffin.
-
+//Christian Beer 2015-2018 with permission from mklasson
 
 #include <vector>
 #include <map>
@@ -612,20 +612,27 @@ void log_cofactor(mpz_class & n) {
 
 //tests <new_factors> against <n> and if valid adds them to <factors> and removes them from <n>
 
-void add_factors(mpz_class & n, vector<pair<mpz_class, int> > & factors, vector<mpz_class> & new_factors) {
+void add_factors(mpz_class & n, vector<pair<mpz_class, int> > & factors, vector<mpz_class> & new_factors, bool nowarn_invalid = false) {
     vector<mpz_class> empty_dummy;
     for (size_t j = 0; j < new_factors.size(); ++j) {
         if (!mpz_divisible_p(n.get_mpz_t(), new_factors[j].get_mpz_t())) {
             //check if gcd>1
             mpz_gcd(new_factors[j].get_mpz_t(), n.get_mpz_t(), new_factors[j].get_mpz_t());
             if (new_factors[j] == 1) {
-                log_and_print("WARNING: factor doesn't divide n\n");
+                if (!nowarn_invalid) {
+                    log_and_print("WARNING: factor doesn't divide n\n");
+                }
                 continue;
             }
         }
         mpz_divexact(n.get_mpz_t(), n.get_mpz_t(), new_factors[j].get_mpz_t());
         if (mpz_probab_prime_p(new_factors[j].get_mpz_t(), 25)) {
             found_factor(new_factors[j], factors);
+            // try if factor divides again
+            while (mpz_divisible_p(n.get_mpz_t(), new_factors[j].get_mpz_t())) {
+                found_factor(new_factors[j], factors);
+                mpz_divexact(n.get_mpz_t(), n.get_mpz_t(), new_factors[j].get_mpz_t());
+            }
         } else {
             log_msg("*** c" + tostring(new_factors[j].get_str().size()) + " = " + new_factors[j].get_str() + "\n");
             factor(new_factors[j], factors, empty_dummy, false); //factor the found factor further and add its prime components to <factors>
@@ -640,7 +647,17 @@ void add_factors(mpz_class & n, vector<pair<mpz_class, int> > & factors, vector<
 
 bool factor(mpz_class n, vector<pair<mpz_class, int> > & factors, vector<mpz_class> & new_factors, bool clear_factors, int max_cofactor, int max_ecm_level) {
     if (clear_factors) {
-        factors.clear();
+        // copy old factors and try them on new n, maybe we are lucky
+        if (factors.size()) {
+            vector<mpz_class> old_factors;
+            for (size_t j = 0; j < factors.size(); ++j) {
+                old_factors.push_back(factors[j].first);
+            }
+            factors.clear();
+            add_factors(n, factors, old_factors, true);
+        } else {
+            factors.clear();
+        }
     }
     if (n == 1 || mpz_probab_prime_p(n.get_mpz_t(), 25)) {
         found_factor(n, factors);
@@ -1187,6 +1204,8 @@ int main(int argc, char ** argv) {
         string driver = "No driver";
         bool found_driver;
 
+        log_msg("*** max_digits =  " + tostring(max_digits) + " no_driver_extra =  " + tostring(no_driver_extra) + " n.size() = " + tostring(n.get_str().size()) +"\n");
+
         // Real drivers will set found_driver to true, and beneficial patterns will set it to false.
         // For guides, we set the default here so that if we're below the digit cutoff we'll keep going,
         // and above it we'll stop.
@@ -1289,6 +1308,8 @@ int main(int argc, char ** argv) {
             //For this case we don't have both so want a zero max_cofactor to do full factoring
             curr_max_cofactor = 0;
         }
+        log_msg("*** found_driver =  " + (string)(found_driver?"true":"false") + " driver = " + driver +"\n");
+        log_msg("*** curr_max_cofactor =  " + tostring(curr_max_cofactor) + " max_cofactor = " + tostring(max_cofactor) +"\n");
         // factor the current index and save the return value
         bool res_factor = factor(n, factors, external_factors, true, curr_max_cofactor, max_ecm_level);
 
