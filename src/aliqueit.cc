@@ -901,7 +901,7 @@ void parse_elf(mpz_class & seq, int & index, mpz_class & n, mpz_class & last_n, 
     log_and_print("Elf " + seq.get_str() + " verified OK!\n");
 }
 
-//output a result line to screen and elf file
+//output a result line to elf file
 
 void save_result(mpz_class & sequence, string s) {
     ofstream f(get_elf_name(sequence).c_str(), ios::app);
@@ -1324,6 +1324,7 @@ int main(int argc, char ** argv) {
         }
         string msg3 = " : " + driver;
         save_result(seq, msg1 + msg2 + "\n");
+        msg1.replace(msg1.find('\t'),1,6-floor(log10(index) + 1),' ');
         cout << msg1 << (factors.size() == 1 && factors[0].second == 1 ? "prp" : "c") << n.get_str().size() << " = " << msg2 << msg3 << endl;
 
         // look at the return value from factor again we may have to exit
