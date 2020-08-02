@@ -1324,7 +1324,7 @@ int main(int argc, char ** argv) {
         }
         string msg3 = " : " + driver;
         save_result(seq, msg1 + msg2 + "\n");
-        msg1.replace(msg1.find('\t'),1,6-floor(log10(index) + 1),' ');
+        msg1.replace(msg1.find('\t'),1,6-floor(log10((index == 0 ? 1 : index)) + 1),' ');
         cout << msg1 << (factors.size() == 1 && factors[0].second == 1 ? "prp" : "c") << n.get_str().size() << " = " << msg2 << msg3 << endl;
 
         // look at the return value from factor again we may have to exit
