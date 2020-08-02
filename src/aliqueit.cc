@@ -660,7 +660,7 @@ bool factor(mpz_class n, vector<pair<mpz_class, int> > & factors, vector<mpz_cla
         }
     }
     if (n == 1 || mpz_probab_prime_p(n.get_mpz_t(), 25)) {
-        found_factor(n, factors);
+        if (n != 1) found_factor(n, factors);
         return true;
     }
     if (new_factors.size()) {
