@@ -40,11 +40,8 @@ public:
     float gnfs_k;
     float gnfs_m;
     float b1scale_ecm;
-    float b2scale_ecm;
     float b1scale_pm1;
-    float b2scale_pm1;
     float b1scale_pp1;
-    float b2scale_pp1;
 
     int threads;
 
