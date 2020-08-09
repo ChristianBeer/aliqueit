@@ -143,7 +143,7 @@ int find_log_factors(string fname, string input_number, string required_on_line,
 
 //finds factors in a gmp-ecm log file and only saves the relevant parts
 
-int find_log_factors_gmp_ecm(string fname, string input_number, string required_on_line, string prefix, vector<mpz_class> & factors) {
+int find_log_factors_gmp_ecm(string fname, string input_number, string required_on_line, string prefix, string multi_factor_sep, vector<mpz_class> & factors) {
     string line, factor;
     int found_factors = 0;
     string save_to_log;
@@ -162,6 +162,16 @@ int find_log_factors_gmp_ecm(string fname, string input_number, string required_
             ss >> ws >> factor;
             factors.push_back(mpz_class(factor, 10));
             ++found_factors;
+            if (multi_factor_sep.size()>0) {
+                pos = line.find(multi_factor_sep, pos);
+                while (pos != line.npos) {
+                    ss.str(line.substr(multi_factor_sep.size()));
+                    ss >> ws >> factor;
+                    factors.push_back(mpz_class(factor, 10));
+                    ++found_factors;
+                    pos = line.find(multi_factor_sep, pos+multi_factor_sep.size());
+                }
+            }
             save_to_log = "Curve " + tostring(curve) + ":\n" + save_to_log;
             log_msg(save_to_log, false);
         }
@@ -252,7 +262,7 @@ int run_ecm_big(string input_number, vector<mpz_class> & new_factors, int max_ec
         cout << msg << "              \r" << flush;
         system(("echo " + input_number + " | " + cfg.ecm_cmd + " -pm1 -B2scale "
                 + tostring(cfg.b2scale_pm1) + " " + tostring(pb1) + " > " + cfg.ecm_tempfile).c_str());
-        int num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors);
+        int num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", " * ", new_factors);
         if (num_facs) {
             check_for_neat_factors(new_factors, cfg.neat_factor_limit_pm1);
             return num_facs;
@@ -266,7 +276,7 @@ int run_ecm_big(string input_number, vector<mpz_class> & new_factors, int max_ec
         cout << msg << "              \r" << flush;
         system(("echo " + input_number + " | " + cfg.ecm_cmd + " -one -pp1 -c 3 -B2scale "
                 + tostring(cfg.b2scale_pp1) + " " + tostring(pb1) + " > " + cfg.ecm_tempfile).c_str());
-        num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors);
+        num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", " * ", new_factors);
         if (num_facs) {
             check_for_neat_factors(new_factors, cfg.neat_factor_limit_pp1);
             return num_facs;
@@ -285,7 +295,7 @@ int run_ecm_big(string input_number, vector<mpz_class> & new_factors, int max_ec
             system(("echo " + input_number + " | " + cfg.ecm_cmd + " -one -c " + tostring(curves)
                     + " -B2scale " + tostring(cfg.b2scale_ecm) + " " + tostring(b1) + " > " + cfg.ecm_tempfile).c_str());
         }
-        num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors);
+        num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", " * ", new_factors);
         if (num_facs) {
             check_for_neat_factors(new_factors, cfg.neat_factor_limit_ecm);
             return num_facs;
@@ -323,7 +333,7 @@ int run_ecm_autoinc(string input_number, vector<mpz_class> & new_factors, bool l
 
     system(("echo " + input_number + " | " + cfg.ecm_cmd + " -one -c " + tostring(curves) + " -I 1 1 > " + cfg.ecm_tempfile).c_str());
 
-    int num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors);
+    int num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", " * ", new_factors);
     check_for_neat_factors(new_factors, cfg.neat_factor_limit_ecm);
     return num_facs;
 }
