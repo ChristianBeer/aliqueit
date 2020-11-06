@@ -1,0 +1,32 @@
+name: Windows build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Download and Install libGMP
+        run: |
+          (New-Object Net.WebClient).DownloadFile('https://github.com/ShiftMediaProject/gmp/releases/download/6.1.2-4/libgmp_6.1.2-4_msvc15.zip', "$GITHUB_WORKSPACE\3rdParty\libgmp.zip")
+          Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory("$GITHUB_WORKSPACE\3rdParty\libgmp.zip", "$GITHUB_WORKSPACE\3rdParty")
+
+      - name: create solution file
+        run: |
+          cd build
+          cmake .. -G "Visual Studio 16 2019 Win64"
+      - name: setup-msbuild
+        uses: microsoft/setup-msbuild@v1
+      - name: run msbuild
+        run: msbuild "$GITHUB_WORKSPACE\build\aliqueit.sln"
