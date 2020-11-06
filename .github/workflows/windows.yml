@@ -29,8 +29,8 @@ jobs:
       - name: create solution file
         run: |
           cd build
-          cmake .. -G "Visual Studio 16 2019 Win64"
+          cmake .. -G "Visual Studio 16 2019" -A "Win64"
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v1
       - name: run msbuild
-        run: msbuild "$GITHUB_WORKSPACE\build\aliqueit.sln"
+        run: msbuild "$env:GITHUB_WORKSPACE\build\aliqueit.sln"
