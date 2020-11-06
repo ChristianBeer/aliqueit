@@ -17,6 +17,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: echo workspace 1
+        run: echo $env:GITHUB_WORKSPACE
+      - name: echo workspace 2
+        run: echo $GITHUB_WORKSPACE
       - name: Download and Install libGMP
         run: |
           (New-Object Net.WebClient).DownloadFile('https://github.com/ShiftMediaProject/gmp/releases/download/6.1.2-4/libgmp_6.1.2-4_msvc15.zip', "$GITHUB_WORKSPACE\3rdParty\libgmp.zip")
