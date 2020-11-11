@@ -17,8 +17,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: echo workspace 1
-        run: echo "${env:GITHUB_WORKSPACE}\filename"
       - name: Download and Install libGMP
         run: |
           (New-Object Net.WebClient).DownloadFile('https://github.com/ShiftMediaProject/gmp/releases/download/6.1.2-4/libgmp_6.1.2-4_msvc15.zip', "${env:GITHUB_WORKSPACE}\3rdParty\libgmp.zip")
@@ -30,5 +28,19 @@ jobs:
           cmake .. -G "Visual Studio 16 2019"
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v1
-      - name: run msbuild
-        run: msbuild "$env:GITHUB_WORKSPACE\build\aliqueit.sln"
+      - name: run msbuild release
+        run: msbuild "${env:GITHUB_WORKSPACE}\build\aliqueit.sln" /p:Configuration=Release
+      - name: run msbuild debug
+        run: msbuild "${env:GITHUB_WORKSPACE}\build\aliqueit.sln" /p:Configuration=Debug
+      - name: upload artifact
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: aliqueit-release
+          path: ${{ github.workspace }}/build/Release/aliqueit.exe
+          if-no-files-found: error
+      - name: upload artifact
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: aliqueit-debug
+          path: ${{ github.workspace }}/build/Debug/aliqueit.exe
+          if-no-files-found: error
