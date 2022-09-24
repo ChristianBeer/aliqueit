@@ -250,8 +250,8 @@ int run_ecm_big(string input_number, vector<mpz_class> & new_factors, int max_ec
         log_msg("\n", false);
         log_msg(msg + "\n");
         cout << msg << "              \r" << flush;
-        system(("echo " + input_number + " | " + cfg.ecm_cmd + " -pm1 -B2scale "
-                + tostring(cfg.b2scale_pm1) + " " + tostring(pb1) + " > " + cfg.ecm_tempfile).c_str());
+        system(("echo " + input_number + " | " + cfg.ecm_cmd + " -pm1 "
+                + tostring(pb1) + " > " + cfg.ecm_tempfile).c_str());
         int num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors);
         if (num_facs) {
             check_for_neat_factors(new_factors, cfg.neat_factor_limit_pm1);
@@ -264,8 +264,8 @@ int run_ecm_big(string input_number, vector<mpz_class> & new_factors, int max_ec
         log_msg("\n", false);
         log_msg(msg + "\n");
         cout << msg << "              \r" << flush;
-        system(("echo " + input_number + " | " + cfg.ecm_cmd + " -one -pp1 -c 3 -B2scale "
-                + tostring(cfg.b2scale_pp1) + " " + tostring(pb1) + " > " + cfg.ecm_tempfile).c_str());
+        system(("echo " + input_number + " | " + cfg.ecm_cmd + " -one -pp1 -c 3 "
+                + tostring(pb1) + " > " + cfg.ecm_tempfile).c_str());
         num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors);
         if (num_facs) {
             check_for_neat_factors(new_factors, cfg.neat_factor_limit_pp1);
@@ -280,10 +280,10 @@ int run_ecm_big(string input_number, vector<mpz_class> & new_factors, int max_ec
         cout << msg << "              \r" << flush;
         if (cfg.use_ecmpy) { //use ecm.py for multithreading
             system(("echo " + input_number + " | " + cfg.ecmpy_cmd + " -one -c " + tostring(curves)
-                    + " -B2scale " + tostring(cfg.b2scale_ecm) + " -out " + cfg.ecm_tempfile + " " + tostring(b1)).c_str());
+                    + " -out " + cfg.ecm_tempfile + " " + tostring(b1)).c_str());
         } else { //use regular ecm
             system(("echo " + input_number + " | " + cfg.ecm_cmd + " -one -c " + tostring(curves)
-                    + " -B2scale " + tostring(cfg.b2scale_ecm) + " " + tostring(b1) + " > " + cfg.ecm_tempfile).c_str());
+                    + " " + tostring(b1) + " > " + cfg.ecm_tempfile).c_str());
         }
         num_facs = find_log_factors_gmp_ecm(cfg.ecm_tempfile, input_number, "Factor found", ": ", new_factors);
         if (num_facs) {

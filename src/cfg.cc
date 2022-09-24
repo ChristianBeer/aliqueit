@@ -121,13 +121,10 @@ cfg_t::cfg_t() {
     gnfs_k = 0.235f;
     gnfs_m = 9.4f;
 
-    //Multiply default B1 and B2 values by these constants.
+    //Multiply default B1 values by these constants.
     b1scale_ecm = 1.0f;
-    b2scale_ecm = 1.0f;
     b1scale_pm1 = 1.0f;
-    b2scale_pm1 = 1.0f;
     b1scale_pp1 = 1.0f;
-    b2scale_pp1 = 1.0f;
 
     //max number of threads to use
     threads = 1;
@@ -251,16 +248,10 @@ void cfg_t::read_config_file() {
             use_ecmpy = get_bool(val);
         } else if (arg == "b1scale_ecm") {
             b1scale_ecm = get_float(val);
-        } else if (arg == "b2scale_ecm") {
-            b2scale_ecm = get_float(val);
         } else if (arg == "b1scale_pm1") {
             b1scale_pm1 = get_float(val);
-        } else if (arg == "b2scale_pm1") {
-            b2scale_pm1 = get_float(val);
         } else if (arg == "b1scale_pp1") {
             b1scale_pp1 = get_float(val);
-        } else if (arg == "b2scale_pp1") {
-            b2scale_pp1 = get_float(val);
         } else if (arg == "threads") {
             threads = get_uint(val);
         } else {
